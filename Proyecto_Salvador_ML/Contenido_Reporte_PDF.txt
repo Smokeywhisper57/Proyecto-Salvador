@@ -1,0 +1,99 @@
+GUÍA DETALLADA PARA EL REPORTE PDF - PROYECTO MACHINE LEARNING
+Autor: Gutierrez Hernandez Kevin Andrew
+Fecha: 19 de Marzo, 2026
+
+Este documento detalla qué incluir en cada sección de su reporte PDF para cumplir con todos los requisitos de la rúbrica.
+
+
+PARTE 2: IMPLEMENTACIÓN DE MODELOS (24 pts)
+
+
+--- PASO 1: ENTRENAMIENTO DE ÁRBOL Y RANDOM FOREST ---
+
+1. Breve contexto del problema y del dataset:
+   - Problema: Clasificación binaria para predecir enfermedades coronarias.
+   - Dataset: "Heart Disease UCI". Contiene 303 registros de pacientes.
+   - Variables clave: age (edad), sex (sexo), cp (tipo de dolor de pecho), trestbps (presión arterial), chol (colesterol), thalach (frecuencia cardíaca máxima), entre otras.
+   - Fuente: Repositorio UCI Machine Learning / Kaggle.
+
+2. Explicación de Hiperparámetros:
+   - criterion='gini': Mide la "impureza" de los nodos. Se eligió Gini por ser computacionalmente eficiente y estándar en Scikit-Learn.
+   - max_depth=5: Se limitó la profundidad para evitar el "overfitting" (que el modelo memorice los datos en lugar de aprender patrones generales). Un árbol muy profundo es propenso a errores con datos nuevos.
+   - n_estimators=100: En Random Forest, indica que usaremos 100 árboles diferentes. Este valor es un balance ideal entre precisión y tiempo de procesamiento.
+
+3. Métricas de Evaluación Utilizadas:
+   - Accuracy (Exactitud): Mide qué porcentaje de casos totales fueron predichos correctamente.
+   - F1-Score: Es fundamental en medicina porque combina Precisión y Exhaustividad. Nos asegura que no estemos ignorando demasiados casos positivos (falsos negativos), lo cual sería peligroso en un diagnóstico.
+
+4. Resultados y Discusión de Predicción:
+   - Captura de pantalla: Mostrar la consola con los valores de Accuracy y F1.
+   - Predicción Individual: Se realizó una prueba con un paciente sintético (55 años, dolor de pecho tipo 1, etc.).
+   - Discusión: "La predicción de 'Enfermo' es coherente, ya que el paciente presenta indicadores de riesgo (edad y tipo de dolor) que el modelo aprendió a identificar como críticos".
+
+5. ¿Cuál modelo funciona mejor y por qué?
+   - Conclusión: El Random Forest superó al Árbol de Decisión (~87% vs ~82%).
+   - Razón Técnica: El Random Forest utiliza "Bagging" (promedia múltiples árboles), lo que reduce drásticamente la varianza y los errores que un solo árbol podría cometer por ruido en los datos.
+
+--- PASO 2: IMPORTANCIA DE VARIABLES ---
+
+1. Identificación de Variables (feature_importances_):
+   - Top 3 Variables: cp (dolor de pecho), ca (vasos coloreados) y thal (talasemia).
+   - Sentido del problema: Estas variables tienen un sentido médico directo. El tipo de dolor de pecho y la obstrucción de vasos sanguíneos son los síntomas primarios reportados en cardiología.
+
+2. Experimento de Impacto:
+   - Qué se hizo: Se re-entrenó el modelo eliminando estas 3 variables clave.
+   - Métrica obtenida: La precisión cayó de 0.8689 a 0.8197.
+   - Visualización: Incluir la captura de 'arbol_decision.png'. Se observa que al inicio del árbol (raíz), el modelo usa 'cp' para dividir los datos, lo que demuestra su importancia jerárquica.
+   - Cambio en complejidad: Al quitar las variables más informativas, el modelo se vuelve "más ciego" y requiere más reglas secundarias para intentar clasificar correctamente, perdiendo eficiencia.
+
+--- PASO 3: OPTIMIZACIÓN (GRIDSEARCHCV) ---
+
+1. Hiperparámetros evaluados:
+   - Se probaron diferentes combinaciones de n_estimators (cantidad de árboles), max_depth (profundidad) y min_samples_split (mínimo de datos para crear una rama).
+
+2. Mejores valores encontrados:
+   - Mostrar la captura de los "Mejores parámetros": {'max_depth': 5, 'min_samples_split': 10, 'n_estimators': 50}.
+
+3. Comparación Antes vs Después:
+   - Antes: 0.8689
+   - Después: 0.8689
+   - Análisis: Aunque el número no subió en este caso específico, el modelo optimizado es preferible porque usa menos árboles (50 en lugar de 100) para lograr el mismo resultado, lo que lo hace más ligero y eficiente.
+
+
+PARTE 3: MANEJO DE DATOS FALTANTES (8 pts)
+
+
+1. Contexto del Dataset:
+   - Dataset: "Horse Colic" (Cólicos en caballos).
+   - Característica: Es un dataset "sucio" con muchos valores nulos ('?').
+
+2. Comparación de Métodos:
+   - Método A (Sin nulos): Se usaron solo las 8 columnas que estaban completas. Accuracy: ~0.71.
+   - Método B (Imputación): Se usaron todas las variables, rellenando los huecos con la Media (SimpleImputer). Accuracy: ~0.65.
+
+3. Discusión de Resultados:
+   - "¿Tiene sentido la predicción?": Sí, pero la caída en precisión con imputación sugiere que los datos faltantes en este dataset médico no son aleatorios. Rellenar con la media podría estar distorsionando la realidad clínica de los caballos.
+
+
+PARTE 4: ANÁLISIS DE PREDICCIONES INDIVIDUALES (5 pts)
+
+
+1. Selección de 3 Registros:
+   - Para cada uno, mostrar la tabla de sus valores (age, sex, cp, etc.) y qué predijo el modelo.
+
+2. Experimento de Modificación:
+   - Ejemplo: "Al paciente del Registro 1, le cambiamos su tipo de dolor de pecho (cp) de 0 a 3".
+   - Resultado: "La predicción cambió de Sano a Enfermo".
+   - Interpretación: Esto demuestra que el modelo es altamente sensible a la variable 'cp'. El resultado tiene sentido porque el dolor de pecho tipo 3 (angina típica) es un síntoma de alta peligrosidad médica.
+
+
+LISTA DE COTEJO PARA LA ENTREGA FINAL:
+
+[ ] Portada con nombre, fecha y datos del curso.
+[ ] Capturas de pantalla LEGIBLES de la consola (outputs de los scripts).
+[ ] Captura de pantalla del código (secciones principales).
+[ ] Captura de la imagen 'arbol_decision.png'.
+[ ] Explicaciones de "por qué" se usaron ciertos hiperparámetros (ver arriba).
+[ ] Los archivos .csv empleados adjuntos en el envío.
+[ ] Los archivos .py (códigos fuente) adjuntos sin comprimir.
+
